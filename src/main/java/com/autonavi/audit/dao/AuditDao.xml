@@ -1,0 +1,699 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.autonavi.audit.dao.AuditDao">
+	<insert id="insertCollectAudit" parameterType="com.autonavi.audit.entity.CollectAudit">
+		insert into
+		collect_audit
+		(
+		ID,
+		LOCATION_NAME,
+		LOCATION_ADDRESS,
+		ORIGINAL_TASK_NAME,
+		COLLECT_TASK_NAME,
+		AUDIT_TASK_NAME,
+		USER_NAME,
+		STATUS,
+		SYSTEM_TYPE,
+		PROCESS_DEFINITION_ID,
+		PROCESS_INSTANCE_ID,
+		SUBMIT_TIME,
+		CREATE_TIME,
+		TASK_AMOUNT,
+		TASK_FREEZING_TIME,
+		TASK_CLASS_NAME,
+		REGIONAL_INFORMATION,
+		CITY,
+		province,
+		CUSTOM_TOLAL_MONEY
+		)values(
+		#{id},
+		#{location_name},
+		#{location_address},
+		#{original_task_name},
+		#{collect_task_name},
+		#{audit_task_name},
+		#{user_name},
+		#{status},
+		#{system_type},
+		#{process_definition_id},
+		#{process_instance_id},
+		#{submit_time},
+		SYSDATE(),
+		#{task_amount},
+		#{task_freezing_time},
+		#{task_class_name},
+		#{regional_information},
+		#{city},
+		#{province},
+		#{custom_tolal_money}
+		)
+	</insert>
+
+	<update id="updateCollectAudit" parameterType="com.autonavi.audit.entity.CollectAudit">
+		update collect_audit
+		set
+		AUDIT_TASK_NAME=#{audit_task_name},
+		<if test="task_amount!=null">TASK_AMOUNT=#{task_amount},</if>
+		<if test="custom_tolal_money!=null">CUSTOM_TOLAL_MONEY=#{custom_tolal_money},</if>
+		TASK_CLASS_NAME_FOR_AUDIT=#{task_class_name_for_audit}
+		<where>
+			ID=#{id}
+		</where>
+	</update>
+
+	<insert id="insertOriginalCoordinates">
+		insert into collect_audit_coordinate(
+		AUDIT_ID,
+		COORDINATE
+		) values
+		<foreach collection="originalCoordinates" item="item" index="index"
+			separator=",">
+			(
+			#{audit_id,jdbcType=NUMERIC},
+			#{item,jdbcType=NUMERIC}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="insertCollectAuditImage" parameterType="java.util.List">
+		insert into collect_audit_image (
+		AUDIT_ID,
+		THUMBNAI_URL,
+		IMAGE_URL,
+		PHOTOGRAPH_TIME,
+		VIDEO_URL,
+		VIDEO_TIME,
+		NO_EXIST_REASON,
+		GPS_TIME,
+		LON,
+		LAT,
+		POINT_LEVEL,
+		POINT_ACCURY,
+		POSITION,
+		`INDEX`
+		)values
+		<foreach collection="images" item="item" index="index"
+			separator=",">
+			(
+			#{audit_id,jdbcType=NUMERIC},
+			#{item.thumbnai_url,jdbcType=VARCHAR},
+			#{item.image_url,jdbcType=VARCHAR},
+			#{item.photograph_time,jdbcType=DATE},
+			#{item.video_url,jdbcType=VARCHAR},
+			#{item.video_time,jdbcType=DATE},
+			#{item.no_exist_reason,jdbcType=VARCHAR},
+			#{item.gps_time,jdbcType=DATE},
+			#{item.lon,jdbcType=NUMERIC},
+			#{item.lat,jdbcType=NUMERIC},
+			#{item.point_level,jdbcType=NUMERIC},
+			#{item.point_accury,jdbcType=NUMERIC},
+			#{item.position,jdbcType=NUMERIC},
+			#{item.index,jdbcType=NUMERIC}
+			)
+		</foreach>
+	</insert>
+
+	<insert id="insertCollectAuditSpecimenImage" parameterType="java.util.List">
+		insert into collect_audit_specimen_image (
+		AUDIT_ID,
+		THUMBNAI_URL,
+		IMAGE_URL
+		)values
+		<foreach collection="images" item="item" index="index"
+			separator=",">
+			(
+			#{audit_id,jdbcType=NUMERIC},
+			#{item.thumbnai_url,jdbcType=VARCHAR},
+			#{item.image_url,jdbcType=VARCHAR}
+			)
+		</foreach>
+	</insert>
+
+	<select id="selectCollectAuditById" parameterType="long"
+		resultType="com.autonavi.audit.entity.CollectAudit">
+		select * from collect_audit
+		where id=#{id} and
+		SYSTEM_TYPE=${system_type}
+		<if test="type!=null and type==9">
+			and STATUS=8
+		</if>
+		<if test="type!=null and type!=9">
+			and STATUS!=8
+		</if>
+	</select>
+
+	<select id="selectCollectAuditByIds" parameterType="java.util.List"
+		resultType="com.autonavi.audit.entity.CollectAudit">
+		select * from collect_audit
+		<where>
+			id in
+			(
+			<foreach collection="list" item="item" index="index"
+				separator=",">
+				#{item.bsTaskId,jdbcType=NUMERIC}
+			</foreach>
+			)
+		</where>
+	</select>
+
+	<select id="findALlCollectAudit" resultType="com.autonavi.audit.entity.CollectAudit">
+		select * from
+		collect_audit
+	</select>
+
+	<update id="audit">
+		update collect_audit
+		<set>
+			<if test="flag == true"> STATUS=3 </if>
+			<if test="flag == false"> STATUS=4 </if>
+		</set>
+		<where>id=#{id}</where>
+	</update>
+
+	<insert id="insertHistory" parameterType="com.autonavi.audit.entity.CollectAuditLogs">
+		insert into
+		collect_audit_logs (
+		AUDIT_ID,
+		TASK_ID,
+		EXECUTION_ID,
+		`STATUS`,
+		AUDIT_TIME,
+		AUDIT_USER,
+		APPEARANCE,
+		DAMAGED,
+		LIGHTING,
+		OCCLUSION,
+		NO_APPROVAL_REASON,
+		COMMENT_MESSAGE
+		) values (
+		#{audit_id},
+		#{task_id},
+		#{executionId},
+		#{status},
+		SYSDATE(),
+		#{audit_user},
+		#{appearance,
+		jdbcType=VARCHAR},
+		#{damaged,
+		jdbcType=VARCHAR},
+		#{lighting,
+		jdbcType=VARCHAR},
+		#{occlusion,
+		jdbcType=VARCHAR},
+		#{no_approval_reason,
+		jdbcType=VARCHAR},
+		#{comment_message, jdbcType=VARCHAR}
+		)
+	</insert>
+
+	<select id="findHistory" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.CollectAuditLogs">
+		select * from collect_audit_logs
+		<where> AUDIT_ID=#{audit_id} </where>
+		order by AUDIT_TIME desc
+	</select>
+
+	<select id="findMyselfInvolvedTask" resultType="com.autonavi.audit.entity.CollectAudit">
+		SELECT DISTINCT
+		ca.*, taskhi.NAME_ bpm_task_name,taskhi.TASK_DEF_KEY_ taskDefinitionKey
+		FROM
+		collect_audit ca
+		left JOIN (
+		SELECT
+		b.NAME_,b.TASK_DEF_KEY_,
+		b.PROC_INST_ID_
+		FROM
+		act_ru_task b
+		) taskhi ON
+		taskhi.PROC_INST_ID_ = ca.`PROCESS_INSTANCE_ID`
+		LEFT
+		OUTER JOIN
+		act_hi_varinst VAR ON ca.PROCESS_INSTANCE_ID =
+		VAR.PROC_INST_ID_
+		INNER
+		JOIN act_hi_varinst A0 ON
+		ca.PROCESS_INSTANCE_ID
+		= A0.PROC_INST_ID_
+		INNER JOIN act_hi_varinst A1
+		ON
+		ca.PROCESS_INSTANCE_ID =
+		A1.PROC_INST_ID_
+		<where>
+			A0.PROC_INST_ID_ IN (
+			SELECT DISTINCT
+			aht.PROC_INST_ID_
+			FROM
+			act_hi_taskinst aht
+			<where>
+				aht.ASSIGNEE_ = #{userName}
+			</where>
+			)
+			AND A1.PROC_INST_ID_ IN (
+			SELECT DISTINCT
+			aht.PROC_INST_ID_
+			FROM
+			act_hi_taskinst aht
+			<where>
+				aht.ASSIGNEE_ = #{userName}
+			</where>
+			)
+			AND A0.NAME_ = 'bsType'
+			AND A0.TEXT_ = #{bsType}
+			<!-- AND A1.NAME_ = 'type'
+			AND A1.TEXT_ = #{type} -->
+			<if test="collectAudit.submit_time_start != null">
+				and submit_time &gt;= #{collectAudit.submit_time_start}
+			</if>
+			<if test="collectAudit.submit_time_end != null">
+				and submit_time &lt;= #{collectAudit.submit_time_end}
+			</if>
+			<if
+				test="collectAudit.location_name != null and collectAudit.location_name != ''">
+				and location_name like '%${collectAudit.location_name}%'
+			</if>
+			<if
+				test="collectAudit.location_address != null and collectAudit.location_address != ''">
+				and location_address like '%${collectAudit.location_address}%'
+			</if>
+			<if
+				test="collectAudit.original_task_name != null and collectAudit.original_task_name != ''">
+				and original_task_name like
+				'%${collectAudit.original_task_name}%'
+			</if>
+			<if
+				test="collectAudit.collect_task_name != null and collectAudit.collect_task_name != ''">
+				and collect_task_name like
+				'%${collectAudit.collect_task_name}%'
+			</if>
+			<if test="collectAudit.user_name != null and collectAudit.user_name != ''">
+				and user_name like '%${collectAudit.user_name}%'
+			</if>
+		</where>
+		ORDER BY
+		ca.create_time DESC
+		LIMIT ${page}, ${size}
+	</select>
+
+	<!-- <select id="findSpecimenPage" parameterType="long" resultType="string"> 
+		select SPECIMEN_PAGE_URL from collect_audit <where>id=#{bsTaskId}</where> 
+		</select> -->
+
+	<select id="findUserPhotos" parameterType="long"
+		resultType="com.autonavi.audit.entity.CollectAuditImage">
+		select * from collect_audit_image
+		<where>AUDIT_ID=#{bsTaskId}</where>
+	</select>
+
+
+	<select id="findAuditSpecimenImageByTaskId" parameterType="long"
+		resultType="com.autonavi.audit.entity.CollectAuditSpecimenImage">
+		select * from collect_audit_specimen_image
+		<where>AUDIT_ID=#{bsTaskId}</where>
+	</select>
+
+	<select id="findOriginalCoordinate" parameterType="long"
+		resultType="double">
+		select COORDINATE from collect_audit_coordinate
+		<where>AUDIT_ID=#{bsTaskId}</where>
+		order by ID
+	</select>
+
+	<select id="findGISType" parameterType="string" resultType="int">
+		select GIS_TYPE from collect_audit_system
+		<where>id=#{system_type}</where>
+	</select>
+
+	<select id="findHistoryDtailByBsTaskId" parameterType="string"
+		resultType="com.autonavi.audit.entity.CollectAuditLogs">
+		select * from collect_audit_logs
+		<where>AUDIT_ID=#{bsTaskId}</where>
+	</select>
+
+	<update id="updateStatus">
+		update collect_audit
+		<set>status=#{status}</set>
+		<where>id=#{bsTaskId}</where>
+	</update>
+
+	<select id="findCollectAuditCoordinateByLongitudeAndLatitude"
+		resultType="com.autonavi.audit.entity.CollectAuditAndCoordinate">
+		SELECT
+		cai.audit_id as auditId,
+		AVG(cai.lon) as coordinateX,
+		AVG(cai.lat) as coordinateY,
+		c.status as status,
+		c.task_class_name as
+		taskClassName
+		FROM collect_audit_image cai,
+		collect_audit c
+		WHERE
+		cai.audit_id = c.id
+		<if test="system_type!=3">AND cai.index % 2=0</if>
+		AND c.system_type = #{system_type}
+		AND c.id &lt;&gt; #{bsTaskId}
+		AND
+		(cai.lon &gt; #{eMin} AND cai.lon &lt;= #{eMax})
+		AND (cai.lat &gt;
+		#{nMin} AND cai.lat &lt;= #{nMax})
+		GROUP BY c.id
+	</select>
+	<select id="findCollectAuditByTaskId" parameterType="string"
+		resultType="com.autonavi.audit.entity.CollectAudit">
+		select * from collect_audit
+		<where>id = #{taskId}</where>
+	</select>
+	<select id="findNearImgPriceByIndex" parameterType="string"
+		resultType="double">
+		select near from collect_audit_price
+		<where>type=#{type}</where>
+	</select>
+	<select id="findFarImgPriceByIndex" parameterType="string"
+		resultType="double">
+		select far from collect_audit_price
+		<where>type=#{type}</where>
+	</select>
+	<select id="updateCollectAuditImageByPrimaryId">
+		update collect_audit_image
+		<if test="isUsed">
+			<set>USED=1</set>
+		</if>
+		<if test="!isUsed">
+			<set>USED=0</set>
+		</if>
+		<where>
+			ID=#{imgId}
+		</where>
+	</select>
+	<select id="findCollectAuditImageById" parameterType="string"
+		resultType="com.autonavi.audit.entity.CollectAuditImage">
+		select * from collect_audit_image
+		<where>id=#{imgId}</where>
+	</select>
+
+	<select id="selectCollectAuditByCondition" resultType="com.autonavi.audit.entity.CollectAudit">
+		select ca.*,taskhi.NAME_ bpm_task_name from collect_audit ca
+		left JOIN (
+		SELECT
+		b.NAME_,
+		b.PROC_INST_ID_
+		FROM
+		act_ru_task b
+		) taskhi ON
+		taskhi.PROC_INST_ID_ = ca.`PROCESS_INSTANCE_ID`
+		where SYSTEM_TYPE=${bsType}
+		<if test="submit_time_start != null">
+			and submit_time &gt;= #{submit_time_start}
+		</if>
+		<if test="submit_time_end != null">
+			and submit_time &lt;= #{submit_time_end}
+		</if>
+		<if test="collect_task_name != null and collect_task_name != ''">
+			and collect_task_name like '%${collect_task_name}%'
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and user_name like '%${user_name}%'
+		</if>
+		<if test="task_class_name != null and task_class_name != ''">
+			and task_class_name like '%${task_class_name}%'
+		</if>
+		ORDER BY submit_time desc
+		limit ${pages},${pageSize}
+	</select>
+
+	<select id="selectCollectAuditByConditionForInAudit" resultType="com.autonavi.audit.entity.CollectAudit">
+		SELECT ca.*,taskhi.NAME_ bpm_task_name FROM collect_audit ca
+		left JOIN (
+		SELECT
+		b.NAME_,
+		b.PROC_INST_ID_
+		FROM
+		act_ru_task b
+		) taskhi ON
+		taskhi.PROC_INST_ID_ = ca.`PROCESS_INSTANCE_ID`
+		WHERE id NOT IN
+		(SELECT
+		ID
+		FROM
+		`dw_collect_submit_tasks_data`
+		WHERE ACT_NAME_ = 'End'
+		OR STATUS = 8
+		GROUP BY id)
+		and SYSTEM_TYPE=${bsType}
+		<if test="submit_time_start != null">
+			and submit_time &gt;= #{submit_time_start}
+		</if>
+		<if test="submit_time_end != null">
+			and submit_time &lt;= #{submit_time_end}
+		</if>
+		<if test="collect_task_name != null and collect_task_name != ''">
+			and collect_task_name like '%${collect_task_name}%'
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and user_name like '%${user_name}%'
+		</if>
+		<if test="task_class_name != null and task_class_name != ''">
+			and task_class_name like '%${task_class_name}%'
+		</if>
+		ORDER BY submit_time desc
+		limit ${pages},${pageSize}
+	</select>
+	
+	<select id="selectCollectAuditCountByConditionForInAudit" resultType="long">
+		SELECT count(DISTINCT ca.id) FROM collect_audit ca
+		left JOIN (
+		SELECT
+		b.NAME_,
+		b.PROC_INST_ID_
+		FROM
+		act_ru_task b
+		) taskhi ON
+		taskhi.PROC_INST_ID_ = ca.`PROCESS_INSTANCE_ID`
+		WHERE id NOT IN
+		(SELECT
+		ID
+		FROM
+		`dw_collect_submit_tasks_data`
+		WHERE ACT_NAME_ = 'End'
+		OR STATUS = 8
+		GROUP BY id)
+		and SYSTEM_TYPE=${bsType}
+		<if test="submit_time_start != null">
+			and submit_time &gt;= #{submit_time_start}
+		</if>
+		<if test="submit_time_end != null">
+			and submit_time &lt;= #{submit_time_end}
+		</if>
+		<if test="collect_task_name != null and collect_task_name != ''">
+			and collect_task_name like '%${collect_task_name}%'
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and user_name like '%${user_name}%'
+		</if>
+		<if test="task_class_name != null and task_class_name != ''">
+			and task_class_name like '%${task_class_name}%'
+		</if>
+	</select>
+
+	<select id="selectCollectAuditCountByCondition" resultType="long">
+		select count(*) from collect_audit
+		where SYSTEM_TYPE=${bsType}
+		<if test="submit_time_start != null">
+			and submit_time &gt;= #{submit_time_start}
+		</if>
+		<if test="submit_time_end != null">
+			and submit_time &lt;= #{submit_time_end}
+		</if>
+		<if test="collect_task_name != null and collect_task_name != ''">
+			and collect_task_name like '%${collect_task_name}%'
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and user_name like '%${user_name}%'
+		</if>
+		<if test="task_class_name != null and task_class_name != ''">
+			and task_class_name like '%${task_class_name}%'
+		</if>
+	</select>
+
+	<select id="selectCollectAuditByConditionForAuditComplete"
+		resultType="com.autonavi.audit.entity.CollectAudit">
+		SELECT
+		ca.`ID`,
+		ca.`ORIGINAL_TASK_NAME`,
+		ca.`COLLECT_TASK_NAME`,
+		ca.`AUDIT_TASK_NAME`,
+		ca.`USER_NAME`,
+		ca.`STATUS`,
+		ca.`SYSTEM_TYPE`,
+		ca.`PROCESS_DEFINITION_ID`,
+		ca.`PROCESS_INSTANCE_ID`,
+		ca.`SUBMIT_TIME`,
+		ca.`CREATE_TIME`,
+		ca.`LOCATION_NAME`,
+		ca.`LOCATION_ADDRESS`,
+		ca.`TASK_AMOUNT`,
+		ca.`TASK_FREEZING_TIME`,
+		ca.`TASK_CLASS_NAME`,
+		ca.`TASK_CLASS_NAME_FOR_AUDIT`,
+		ca.ACT_NAME_ bpm_task_name
+		FROM
+		`dw_collect_submit_tasks_data` ca
+		WHERE ACT_NAME_ = 'End' 
+		<if test="flag">
+			AND STATUS=3
+		</if>	
+		<if test="!flag">
+			AND STATUS=4
+		</if>	
+		and SYSTEM_TYPE=${bsType}
+		<if test="submit_time_start != null">
+			and submit_time &gt;= #{submit_time_start}
+		</if>
+		<if test="submit_time_end != null">
+			and submit_time &lt;= #{submit_time_end}
+		</if>
+		<if test="collect_task_name != null and collect_task_name != ''">
+			and collect_task_name like '%${collect_task_name}%'
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and user_name like '%${user_name}%'
+		</if>
+		<if test="task_class_name != null and task_class_name != ''">
+			and task_class_name like '%${task_class_name}%'
+		</if>
+		GROUP BY ID
+		ORDER BY submit_time desc
+		limit ${pages},${pageSize}
+	</select>
+	
+	<select id="selectCollectAuditCountByConditionForAuditComplete"
+		resultType="long">
+		SELECT count(DISTINCT ca.id)
+		FROM
+		`dw_collect_submit_tasks_data` ca
+		WHERE ACT_NAME_ = 'End' 
+		<if test="flag">
+			AND STATUS=3
+		</if>	
+		<if test="!flag">
+			AND STATUS=4
+		</if>	
+		and SYSTEM_TYPE=${bsType}
+		<if test="submit_time_start != null">
+			and submit_time &gt;= #{submit_time_start}
+		</if>
+		<if test="submit_time_end != null">
+			and submit_time &lt;= #{submit_time_end}
+		</if>
+		<if test="collect_task_name != null and collect_task_name != ''">
+			and collect_task_name like '%${collect_task_name}%'
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and user_name like '%${user_name}%'
+		</if>
+		<if test="task_class_name != null and task_class_name != ''">
+			and task_class_name like '%${task_class_name}%'
+		</if>
+	</select>
+	
+	<select id="selectCollectAuditByConditionForInAppeal" resultType="com.autonavi.audit.entity.CollectAudit">
+		SELECT
+		ca.`ID`,
+		ca.`ORIGINAL_TASK_NAME`,
+		ca.`COLLECT_TASK_NAME`,
+		ca.`AUDIT_TASK_NAME`,
+		ca.`USER_NAME`,
+		ca.`STATUS`,
+		ca.`SYSTEM_TYPE`,
+		ca.`PROCESS_DEFINITION_ID`,
+		ca.`PROCESS_INSTANCE_ID`,
+		ca.`SUBMIT_TIME`,
+		ca.`CREATE_TIME`,
+		ca.`LOCATION_NAME`,
+		ca.`LOCATION_ADDRESS`,
+		ca.`TASK_AMOUNT`,
+		ca.`TASK_FREEZING_TIME`,
+		ca.`TASK_CLASS_NAME`,
+		ca.`TASK_CLASS_NAME_FOR_AUDIT`,
+		ca.ACT_NAME_ bpm_task_name
+		FROM `dw_collect_submit_tasks_data` ca
+		WHERE STATUS =8
+		and SYSTEM_TYPE=${bsType}
+		<if test="submit_time_start != null">
+			and submit_time &gt;= #{submit_time_start}
+		</if>
+		<if test="submit_time_end != null">
+			and submit_time &lt;= #{submit_time_end}
+		</if>
+		<if test="collect_task_name != null and collect_task_name != ''">
+			and collect_task_name like '%${collect_task_name}%'
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and user_name like '%${user_name}%'
+		</if>
+		<if test="task_class_name != null and task_class_name != ''">
+			and task_class_name like '%${task_class_name}%'
+		</if>
+		GROUP BY ID
+		ORDER BY submit_time desc
+		limit ${pages},${pageSize}
+	</select>
+	
+	<select id="selectCollectAuditCountByConditionForInAppeal" resultType="long">
+		SELECT count(DISTINCT ca.id)
+		FROM `dw_collect_submit_tasks_data` ca
+		WHERE STATUS =8
+		and SYSTEM_TYPE=${bsType}
+		<if test="submit_time_start != null">
+			and submit_time &gt;= #{submit_time_start}
+		</if>
+		<if test="submit_time_end != null">
+			and submit_time &lt;= #{submit_time_end}
+		</if>
+		<if test="collect_task_name != null and collect_task_name != ''">
+			and collect_task_name like '%${collect_task_name}%'
+		</if>
+		<if test="user_name != null and user_name != ''">
+			and user_name like '%${user_name}%'
+		</if>
+		<if test="task_class_name != null and task_class_name != ''">
+			and task_class_name like '%${task_class_name}%'
+		</if>
+	</select>
+	
+	<select id="findCollectAudit"
+		resultType="com.autonavi.audit.entity.CollectAudit">
+		SELECT
+		ID,
+		ORIGINAL_TASK_NAME,
+		COLLECT_TASK_NAME,
+		AUDIT_TASK_NAME,
+		USER_NAME,
+		STATUS,
+		SYSTEM_TYPE,
+		PROCESS_DEFINITION_ID,
+		PROCESS_INSTANCE_ID,
+		SUBMIT_TIME,
+		CREATE_TIME,
+		LOCATION_NAME,
+		LOCATION_ADDRESS,
+		TASK_AMOUNT,
+		TASK_FREEZING_TIME,
+		TASK_CLASS_NAME,
+		TASK_CLASS_NAME_FOR_AUDIT,CITY,province
+		FROM collect_audit
+		WHERE SYSTEM_TYPE=#{ca.system_type}
+		AND (STATUS=3 OR STATUS=4)
+		<if test="ca.submit_time_start_string != null">
+			and submit_time &gt;= #{ca.submit_time_start_string}
+		</if>
+		<if test="ca.submit_time_end_string != null">
+			and submit_time &lt;= #{ca.submit_time_end_string}
+		</if>
+		<if test="ca.collect_task_name != null and ca.collect_task_name != ''">
+			and collect_task_name like '%${ca.collect_task_name}%'
+		</if>
+		GROUP BY ID
+		ORDER BY submit_time desc
+	</select>
+</mapper>

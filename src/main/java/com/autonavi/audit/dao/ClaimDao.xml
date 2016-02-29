@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.autonavi.audit.dao.ClaimDao">
+	<insert id="insertClaim" parameterType="com.autonavi.audit.entity.CollectAuditClaim" useGeneratedKeys= "true" keyProperty ="id">
+		insert
+		into
+		collect_audit_claim
+		( ID, customId, systemId, createTime,
+		createBy,claimType,updateBy,updateTime,customName,systemName,createByName,updateByName,claimUserId,claimUserName
+		)values
+		(#{id},
+		#{customId},#{systemId},SYSDATE(),#{createBy},#{claimType},#{updateBy},#{updateTime}
+		,#{customName},#{systemName},#{createByName},#{updateByName},#{claimUserId},#{claimUserName})
+	</insert>
+
+	<update id="updateClaim" parameterType="com.autonavi.audit.entity.CollectAuditClaim">
+		update collect_audit_claim set
+		<if test="customId!=null">customId=#{customId},</if>
+		<if test="systemId!=null">systemId=#{systemId},</if>
+		<if test="claimType!=null">claimType=#{claimType},</if>
+		<if test="createBy!=null">createBy=#{createBy},</if>
+		<if test="createTime!=null">createTime=#{createTime},</if>
+		<if test="updateBy!=null">updateBy=#{updateBy},</if>
+		<if test="customName!=null">customName=#{customName},</if>
+		<if test="systemName!=null">systemName=#{systemName},</if>
+		<if test="createByName!=null">createByName=#{createByName},</if>
+		<if test="updateByName!=null">updateByName=#{updateByName},</if>
+		<if test="claimUserId!=null">claimUserId=#{claimUserId},</if>
+		<if test="claimUserName!=null">claimUserName=#{claimUserName},</if>
+		updateTime=SYSDATE()
+		<where>
+			id=#{id}
+		</where>
+	</update>
+
+	<select id="queryClaimByPrimaryKey" resultType="com.autonavi.audit.entity.CollectAuditClaim"
+		parameterType="java.lang.String">
+		select
+		ID, customId, systemId, createTime,
+		createBy,claimType,updateBy,updateTime,customName,systemName,createByName,updateByName,claimUserId,claimUserName
+		from collect_audit_claim
+		where
+		id=#{id}
+	</select>
+
+	<select id="queryClaimByCondition" resultType="com.autonavi.audit.entity.CollectAuditClaim"
+		parameterType="com.autonavi.audit.entity.CollectAuditClaim">
+		select
+		ID, customId, systemId, createTime,
+		createBy,claimType,updateBy,updateTime,customName,systemName,createByName,updateByName,claimUserId,claimUserName
+		from collect_audit_claim
+		<where>
+			1=1
+			<if test="customId!=null">and customId=#{customId}</if>
+			<if test="systemId!=null">and systemId=#{systemId}</if>
+			<if test="claimType!=null">and claimType=#{claimType}</if>
+			<if test="createBy!=null">and createBy=#{createBy}</if>
+			<if test="updateBy!=null">and updateBy=#{updateBy}</if>
+			<if test="customName!=null">and customName like '%${customName}%'</if>
+			<if test="systemName!=null">and systemName like '%${systemName}%'</if>
+			<if test="claimUserName!=null">and claimUserName like '%${claimUserName}%'</if>
+			<if test="createByName!=null">and createByName like '%${createByName}%'</if>
+			<if test="updateByName!=null">and updateByName like '%${updateByName}%'</if>
+		</where>
+	</select>
+
+	<select id="query" resultType="com.autonavi.audit.entity.CollectAuditClaim">
+		select
+		ID, customId, systemId, createTime,
+		createBy,claimType,updateBy,updateTime,customName,systemName,createByName,updateByName,claimUserId,claimUserName
+		from collect_audit_claim
+		<where>
+			1=1
+			<if test="cac.customId!=null">and customId=#{cac.customId}</if>
+			<if test="cac.systemId!=null">and systemId=#{cac.systemId}</if>
+			<if test="cac.claimType!=null">and claimType=#{cac.claimType}</if>
+			<if test="cac.createBy!=null">and createBy=#{cac.createBy}</if>
+			<if test="cac.updateBy!=null">and updateBy=#{cac.updateBy}</if>
+			<if test="cac.customName!=null">and customName like '%${cac.customName}%'</if>
+			<if test="cac.systemName!=null">and systemName like '%${cac.systemName}%'</if>
+			<if test="cac.claimUserName!=null">and claimUserName like '%${cac.claimUserName}%'</if>
+			<if test="cac.createByName!=null">and createByName like '%${cac.createByName}%'</if>
+			<if test="cac.updateByName!=null">and updateByName like '%${cac.updateByName}%'</if>
+		</where>
+		ORDER BY createTime DESC
+		limit ${pageNo},${pageSize}
+	</select>
+
+	<select id="queryCount" resultType="long">
+		select count(1) from
+		collect_audit_claim
+		<where>
+			1=1
+			<if test="cac.customId!=null">and customId=#{cac.customId}</if>
+			<if test="cac.systemId!=null">and systemId=#{cac.systemId}</if>
+			<if test="cac.claimType!=null">and claimType=#{cac.claimType}</if>
+			<if test="cac.createBy!=null">and createBy=#{cac.createBy}</if>
+			<if test="cac.updateBy!=null">and updateBy=#{cac.updateBy}</if>
+			<if test="cac.customName!=null">and customName like '%${cac.customName}%'</if>
+			<if test="cac.systemName!=null">and systemName like '%${cac.systemName}%'</if>
+			<if test="cac.claimUserName!=null">and claimUserName like '%${cac.claimUserName}%'</if>
+			<if test="cac.createByName!=null">and createByName like '%${cac.createByName}%'</if>
+			<if test="cac.updateByName!=null">and updateByName like '%${cac.updateByName}%'</if>
+		</where>
+	</select>
+	
+	<delete id="delClaim" parameterType="com.autonavi.audit.entity.CollectAuditClaim" >
+		delete FROM collect_audit_claim
+		<where>id=#{id}</where>
+	</delete>
+</mapper>

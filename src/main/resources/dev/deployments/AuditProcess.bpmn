@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="AuditProcess" name="Audit Process" isExecutable="true">
+    <startEvent id="startevent1" name="开始"></startEvent>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="Audit"></sequenceFlow>
+    <userTask id="Audit" name="审核" activiti:candidateGroups="audit_test"></userTask>
+    <endEvent id="endevent1" name="结束"></endEvent>
+    <dataObject id="bsType" name="业务类型" itemSubjectRef="xsd:int"></dataObject>
+    <sequenceFlow id="flow2" sourceRef="Audit" targetRef="endevent1"></sequenceFlow>
+    <boundaryEvent id="boundarytimer1" name="Timer" attachedToRef="Audit" cancelActivity="true">
+      <timerEventDefinition>
+        <timeDuration>${deadline}</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <userTask id="usertask1" name="过期任务" activiti:candidateGroups="audit_test">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.autonavi.audit.service.support.DeadlineCreateTaskListener">
+          <activiti:field name="deadline">
+            <activiti:expression>${deadline}</activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow3" sourceRef="boundarytimer1" targetRef="usertask1"></sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="usertask1" targetRef="endevent1"></sequenceFlow>
+    <textAnnotation id="textannotation1">
+      <text>如果到审核期限，任务则被认为过期。这时可以进行复审</text>
+    </textAnnotation>
+    <association id="association1" sourceRef="usertask1" targetRef="textannotation1"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_AuditProcess">
+    <bpmndi:BPMNPlane bpmnElement="AuditProcess" id="BPMNPlane_AuditProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="40.0" y="40.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Audit" id="BPMNShape_Audit">
+        <omgdc:Bounds height="55.0" width="105.0" x="170.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="410.0" y="39.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundarytimer1" id="BPMNShape_boundarytimer1">
+        <omgdc:Bounds height="30.0" width="30.0" x="190.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="152.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
+        <omgdc:Bounds height="51.0" width="121.0" x="290.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="75.0" y="57.0"></omgdi:waypoint>
+        <omgdi:waypoint x="170.0" y="57.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="275.0" y="57.0"></omgdi:waypoint>
+        <omgdi:waypoint x="410.0" y="56.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="205.0" y="110.0"></omgdi:waypoint>
+        <omgdi:waypoint x="204.0" y="200.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="204.0" y="200.0"></omgdi:waypoint>
+        <omgdi:waypoint x="274.0" y="140.0"></omgdi:waypoint>
+        <omgdi:waypoint x="427.0" y="74.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="association1" id="BPMNEdge_association1">
+        <omgdi:waypoint x="257.0" y="227.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="255.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

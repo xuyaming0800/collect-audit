@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.autonavi.audit.dao.AuditSysConfigDao">
+
+	<insert id="insertCollectAuditSystem" parameterType="com.autonavi.audit.entity.CollectAuditSystem">
+		insert into
+		COLLECT_AUDIT_SYSTEM
+		(ID,SYSTEM_NAME,MQURL,INPUT_QUEUE,OUTPUT_QUEUE,GIS_TYPE,CREATE_TIME)
+		values(#{id},#{system_name},#{mqurl},#{input_queue},#{output_queue},#{gis_type}, UNIX_TIMESTAMP())
+	</insert>
+	
+	
+	
+	<select id="selectCollectAuditSystem" 
+		resultType="com.autonavi.audit.entity.CollectAuditSystem">
+		select * from COLLECT_AUDIT_SYSTEM
+	</select>
+	
+	
+	<update id="updateCollectAuditSystem" parameterType="com.autonavi.audit.entity.CollectAuditSystem">
+		update COLLECT_AUDIT_SYSTEM
+		<set>
+			SYSTEM_NAME = #{system_name,jdbcType=VARCHAR},
+			MQURL = #{mqurl,jdbcType=VARCHAR},
+			INPUT_QUEUE = #{input_queue,jdbcType=VARCHAR},
+			OUTPUT_QUEUE = #{output_queue,jdbcType=VARCHAR},
+			SYSTEM_ID = #{system_id,jdbcType=VARCHAR},
+			id = #{system_id,jdbcType=VARCHAR},
+			GIS_TYPE = #{gis_type,jdbcType=INTEGER}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	
+	
+	<delete id="deleteCollectAuditSystem" parameterType="java.lang.String" >
+		delete FROM COLLECT_AUDIT_SYSTEM
+		<where>id=#{id}</where>
+	</delete>
+	
+	<select id="queryCollectAuditSystemById" 
+		resultType="com.autonavi.audit.entity.CollectAuditSystem" parameterType="java.lang.String">
+		select * from COLLECT_AUDIT_SYSTEM
+		<where>id=#{id}</where>
+	</select>
+
+</mapper>

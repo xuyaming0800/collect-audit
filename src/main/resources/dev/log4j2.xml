@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+
+		<RollingRandomAccessFile name="msgRollingRandomAccessFile"
+			fileName="msg.log"
+			filePattern="$${date:yyyy-MM}/msg-%d{MM-dd-yyyy}-%i.log.gz">
+			<PatternLayout>
+				<Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy interval="1"
+					modulate="true" />
+			</Policies>
+			<DefaultRolloverStrategy max="30" />
+		</RollingRandomAccessFile>
+		
+		<SMTP name="Mail" subject="审核接收发生错误" to="jia.miao@dataup.cn,yaming.xu@dataup.cn,ang.ji@dataup.cn"
+			from="noreply@dataup.cn" smtpHost="smtp.mxhichina.com" smtpPort="25"
+			smtpUsername="noreply@dataup.cn" smtpPassword="1qaz2wsx3edc!" bufferSize="50">
+		</SMTP>
+	</Appenders>
+	<Loggers>
+		<logger name="com.autonavi.audit.service" level="TRACE">
+		</logger>
+<!-- 		<logger name="com.autonavi.audit.mq.RabbitMQUtils" level="TRACE"> -->
+<!-- 			<AppenderRef ref="msgRollingRandomAccessFile" /> -->
+<!-- 		</logger> -->
+<!-- 		<logger name="com.autonavi.audit.mq.RabbitMQUtils" level="ERROR"> -->
+<!-- 			<AppenderRef ref="Mail" /> -->
+<!-- 		</logger> -->
+		<logger name="org.crazycake.shiro" level="debug"/>
+		<Root level="debug">
+			<AppenderRef ref="Console" />
+		</Root>
+	</Loggers>
+</Configuration>
+

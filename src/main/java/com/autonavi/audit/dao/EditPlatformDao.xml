@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.autonavi.audit.dao.EditPlatformDao">
+	<select id="queryOverlayByTaskId" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.Overlay">
+		select id,layer_id,type,task_id  from collect_edit_overlay
+		<where>
+			task_id = #{task_id}
+		</where>
+	</select>
+	<select id="queryOverlayById" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.Overlay">
+		select id,layer_id,type,task_id  from collect_edit_overlay
+		<where>
+			id = #{id}
+		</where>
+	</select>
+	<select id="queryOverlayByLayerId" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.Overlay">
+		select id,layer_id,type,task_id  from collect_edit_overlay
+		<where>
+			layer_id = #{layer_id}
+		</where>
+	</select>
+	<select id="queryOverlayByLayerIds" parameterType="java.util.List"
+		resultType="com.autonavi.audit.entity.Overlay">
+		select id,layer_id,type,task_id  from collect_edit_overlay
+		<where>
+			layer_id in
+			(
+			<foreach collection="layerIdList" item="item" index="index"
+				separator=",">
+				#{item.layer_id,jdbcType=VARCHAR}
+			</foreach>
+			)
+		</where>
+	</select>
+	<insert id="insertOverlay" parameterType="com.autonavi.audit.entity.Overlay">
+		insert into collect_edit_overlay 
+		(id,layer_id,type,task_id,batch_id)
+		values(#{id},#{layer_id},#{type},#{task_id},#{batch_id})
+	</insert>
+	<update id="updateOverlay" parameterType="com.autonavi.audit.entity.Overlay">
+		update collect_edit_overlay
+		<set>
+			layer_id = #{layer_id,jdbcType=VARCHAR},
+			type = #{type,jdbcType=VARCHAR},
+			task_id = #{task_id,jdbcType=VARCHAR}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	<delete id="deleteOverlay" parameterType="java.lang.String" >
+		delete FROM collect_edit_overlay
+		<where>id=#{id}</where>
+	</delete>
+	
+	
+	<select id="queryPointByOverlayId" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.Point">
+		select id,lng,lat,overlay_id from collect_edit_point
+		<where>
+			overlay_id = #{overlay_id}
+		</where>
+			order by order_no ASC
+	</select>
+	<insert id="insertPoint" parameterType="com.autonavi.audit.entity.Point">
+		insert into collect_edit_point 
+		(id,lng,lat,overlay_id,order_no)
+		values(#{id},#{lng},#{lat},#{overlay_id},#{order_no})
+	</insert>
+	<insert id="insertPoints" parameterType="java.util.List">
+		insert into collect_edit_point 
+		(id,lng,lat,overlay_id,order_no) values
+		<foreach collection="points" item="point" index="index"
+			separator=",">
+			(#{point.id},#{point.lng},#{point.lat},#{point.overlay_id},#{point.order_no})
+		</foreach>
+	</insert>
+	<delete id="deletePoint" parameterType="java.lang.String" >
+		delete FROM collect_edit_point
+		<where>
+			overlay_id=#{overlay_id}
+		</where>
+	</delete>
+	
+	<select id="queryPropertyByOverlayId" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.Property">
+		select id,prop_name,prop_value,overlay_id  from collect_edit_property
+		<where>
+			overlay_id = #{overlay_id}
+		</where>
+		ORDER BY order_no
+	</select>
+	<insert id="insertProperty" parameterType="com.autonavi.audit.entity.Property">
+		insert into collect_edit_property 
+		(id,prop_name,prop_value,overlay_id)
+		values(#{id},#{prop_name},#{prop_value},#{overlay_id})
+	</insert>
+	<insert id="insertProps" parameterType="java.util.List">
+		insert into collect_edit_property 
+		(id,prop_name,prop_value,overlay_id) values
+		<foreach collection="props" item="prop" index="index"
+			separator=",">
+			(#{prop.id},#{prop.prop_name},#{prop.prop_value},#{prop.overlay_id})
+		</foreach>
+	</insert>
+	<delete id="deleteProperty" parameterType="java.lang.String" >
+		delete FROM collect_edit_property
+		<where>overlay_id=#{overlay_id}</where>
+	</delete>
+	
+	<select id="queryLayerByProType" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.Layer">
+		select id,name  from collect_edit_layer
+		<where>
+			 pid in ( SELECT id FROM collect_edit_layer WHERE pro_type = #{pro_type})
+		</where>
+		ORDER BY order_no
+	</select>
+	<select id="queryLayerCountByProType" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.Layer">
+		select id,name,pId,pro_type,order_no from collect_edit_layer
+		where pro_type = #{pro_type} 
+		<if test="pId!=null and pId!=''">and pId = #{pId}</if>
+	</select>
+	<insert id="insertLayer" parameterType="com.autonavi.audit.entity.Layer">
+		insert into collect_edit_layer 
+		(id,name,pId,pro_type,order_no)
+		values(#{id},#{name},#{pId},#{pro_type},#{order_no})
+	</insert>
+	<update id="updateLayer" parameterType="com.autonavi.audit.entity.Layer">
+		update collect_edit_layer
+		<set>
+			name = #{name,jdbcType=VARCHAR},
+			pro_type = #{pro_type,jdbcType=VARCHAR},
+			order_no = #{order_no,jdbcType=BIGINT}
+		</set>
+		<where>id=#{id}</where>
+	</update>
+	<delete id="deleteLayer" parameterType="java.util.List" >
+		delete FROM collect_edit_layer
+			<where>
+			id in
+			(
+			<foreach collection="idList" item="item" index="index"
+				separator=",">
+				#{item.id,jdbcType=VARCHAR}
+			</foreach>
+			)
+		</where>
+	</delete>
+	<select id="queryLayerTree" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.LayerTree">
+		select id,name,pId,pro_type,order_no  from collect_edit_layer
+		<where>
+			pId = #{id}
+		</where>
+		ORDER BY order_no
+	</select>
+	
+	<insert id="insertLayerProps" parameterType="java.util.List">
+		insert into collect_edit_layer_prop 
+		(layer_id,prop_name,order_no) values
+		<foreach collection="layerProps" item="layerProp" index="index"
+			separator=",">
+			(#{layerProp.layer_id},#{layerProp.prop_name},#{layerProp.order_no})
+		</foreach>
+	</insert>
+	<delete id="deleteLayerProp" parameterType="java.lang.String" >
+		delete FROM collect_edit_layer_prop
+		<where>layer_id=#{layer_id}</where>
+	</delete>
+	<select id="queryLayerProps" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.LayerProp">
+		select id, layer_id, prop_name,order_no  from collect_edit_layer_prop
+		<where>
+			layer_id = #{layer_id} 
+		</where>
+		ORDER BY order_no
+	</select>
+	<select id="queryPointByBatchId" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.Point">
+		select cep.id,cep.lng,cep.lat,cep.overlay_id from collect_edit_overlay ceo
+		left join collect_edit_point cep on ceo.id=cep.overlay_id
+		<where>
+			ceo.batch_id = #{batch_id}
+		</where>
+	</select>
+	<select id="queryPropertyByBatchId" parameterType="java.lang.String"
+		resultType="com.autonavi.audit.entity.Property">
+		select CEP.id as id,CEP.prop_name as prop_name,CEP.prop_value as prop_value,CEP.overlay_id as overlay_id FROM COLLECT_EDIT_OVERLAY CEO
+		RIGHT JOIN COLLECT_EDIT_PROPERTY CEP ON CEO.ID=CEP.OVERLAY_ID
+		<where>
+			ceo.batch_id = #{batch_id}
+		</where>
+	</select>
+	<select id="findProNamesBySystemId" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT DISTINCT cep.`prop_name` FROM `collect_edit_property` cep
+ 		JOIN `collect_edit_overlay` ceo ON cep.`overlay_id`=ceo.`id`
+ 		JOIN `collect_audit` ca ON ceo.`task_id`=ca.`ID`
+ 		WHERE ca.`SYSTEM_TYPE`=#{systemId}
+	</select>
+</mapper>

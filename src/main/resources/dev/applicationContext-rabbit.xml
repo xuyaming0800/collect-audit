@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+						http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+						http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context-4.1.xsd
+						http://www.springframework.org/schema/util
+						http://www.springframework.org/schema/util/spring-util-4.1.xsd
+						http://www.springframework.org/schema/rabbit
+      					http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd">
+	<!-- 连接服务配置 -->
+	<rabbit:connection-factory id="connectionFactory"
+		host="10.19.3.158" username="guest" password="guest" port="15672" />
+
+	<rabbit:admin connection-factory="connectionFactory" />
+
+	<!-- spring template声明 -->
+	<rabbit:template exchange="my-mq-exchange" id="amqpTemplate"
+		connection-factory="connectionFactory" />
+
+</beans>

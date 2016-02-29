@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+        http://www.springframework.org/schema/context  
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd  ">
+	<bean id="mySearch" class="com.search.implement.MySearchServiceImp">
+		<property name="clusterList">
+			<list>
+				<value>123.57.213.15:9300</value>
+			</list>
+		</property>
+		<property name="searchClientConfigureMap">
+			<map>
+				<entry key="cluster.name" value="elasticsearch-1.3.9">
+				</entry>
+				<!-- 连接超时设置 -->
+				<entry key="client.transport.ping_timeout" value="5s">
+				</entry>
+				<!-- 嗅探集群设置 -->
+				<entry key="client.transport.sniff" value="false">
+				</entry>
+				<!-- 设置为true，忽略连接节点的群集名称验证 -->
+				<entry key="client.transport.ignore_cluster_name" value="false">
+				</entry>
+			</map>
+		</property>
+	</bean>
+</beans>

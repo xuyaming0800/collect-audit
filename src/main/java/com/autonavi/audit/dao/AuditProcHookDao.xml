@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.autonavi.audit.dao.AuditProcHookDao">
+	<select id="selectExpression" parameterType="java.util.List"
+		resultType="com.autonavi.audit.entity.CollectAuditProchook">
+		select * from COLLECT_AUDIT_PROCHOOK
+		<where>
+			PROC_DEF_ID in
+			(
+			<foreach collection="list" item="item" index="index"
+				separator=",">
+				#{item.id,jdbcType=VARCHAR}
+			</foreach>
+			)
+		</where>
+	</select>
+	<select id="findAll" resultType="com.autonavi.audit.entity.CollectAuditProchook">
+		select * from
+		COLLECT_AUDIT_PROCHOOK
+	</select>
+
+	<insert id="insert">
+		insert into COLLECT_AUDIT_PROCHOOK
+		(PROC_DEF_ID,EXPRESSION,CREATE_TIME,CREATE_USER)
+		values(#{processDefinitionId},#{expression},SYSDATE(),#{userName})
+	</insert>
+
+	<delete id="delete" parameterType="string">
+		delete from COLLECT_AUDIT_PROCHOOK
+		<where>PROC_DEF_ID=#{processDefinitionId}</where>
+	</delete>
+
+	<update id="updateExpression">
+		update COLLECT_AUDIT_PROCHOOK
+		<set>EXPRESSION=#{expression}</set>
+		<where>PROC_DEF_ID=#{processDefinitionId}</where>
+	</update>
+</mapper>

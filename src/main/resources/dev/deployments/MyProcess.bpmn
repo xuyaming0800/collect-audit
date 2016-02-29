@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test" id="review-definitions">
+  <process id="AuditProcess" name="AuditProcess" isExecutable="true">
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <userTask id="firstAuditUsertask" name="初审" activiti:candidateGroups="audit_first,audit_test" activiti:formKey="1">
+      <extensionElements>
+        <activiti:taskListener event="complete" class="com.autonavi.audit.service.support.UpdateStatusTaskListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[2]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="com.autonavi.audit.service.support.SetClaimTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="endevent2" name="End">
+      <extensionElements>
+        <activiti:executionListener event="start" class="com.autonavi.audit.service.support.UpdateFlagExecutionListener"></activiti:executionListener>
+        <activiti:executionListener event="start" class="com.autonavi.audit.service.support.UpdateStatusExecutionListener">
+          <activiti:field name="status">
+            <activiti:expression>${flag?3:4}</activiti:expression>
+          </activiti:field>
+        </activiti:executionListener>
+        <activiti:executionListener event="start" class="com.autonavi.audit.service.support.updateTotalMoneyExecutionListener"></activiti:executionListener>
+        <activiti:executionListener event="start" class="com.autonavi.audit.service.support.MqSendMessageExecutionListener"></activiti:executionListener>
+        <activiti:executionListener event="start" class="com.autonavi.audit.service.support.PayRecordExecutionListener"></activiti:executionListener>
+        <activiti:executionListener event="start" class="com.autonavi.audit.service.support.PayExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </endEvent>
+    <userTask id="samplingUsertask" name="抽检" activiti:candidateGroups="audit_casual_inspection,audit_test" activiti:formKey="2">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.autonavi.audit.service.support.UpdateStatusTaskListener"></activiti:taskListener>
+        <activiti:taskListener event="create" class="com.autonavi.audit.service.support.SetClaimTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <boundaryEvent id="boundarytimer1" name="时间到，自动通过" attachedToRef="samplingUsertask" cancelActivity="true">
+      <documentation>Non audit task,auto complete</documentation>
+      <timerEventDefinition>
+        <timeDate>PT72H</timeDate>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="flow8" sourceRef="startevent1" targetRef="firstAuditUsertask"></sequenceFlow>
+    <serviceTask id="firstAuditMailtask" name="发邮件提醒初审人" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="to">
+          <activiti:expression>${email}</activiti:expression>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:expression>任务${collect_task_name}(${task_class_name})到期，请审核</activiti:expression>
+        </activiti:field>
+        <activiti:field name="html">
+          <activiti:expression>&lt;h1&gt;任务${collect_task_name}(${task_class_name})到期，请审核&lt;/h1&gt;
+&lt;h1&gt;如有问题，请联系管理员：jia.miao@dataup.cn。请勿直接回复该邮箱（因为回了也没用）&lt;/h1&gt;</activiti:expression>
+        </activiti:field>
+        <activiti:field name="charset">
+          <activiti:string><![CDATA[gbk]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <boundaryEvent id="boundarytimer2" name="初审允许的最长持续时间到，发送邮件提醒（不终止当前流程）" attachedToRef="firstAuditUsertask" cancelActivity="false">
+      <timerEventDefinition>
+        <timeDate>PT48H</timeDate>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="flow11" name="发送邮件提醒" sourceRef="boundarytimer2" targetRef="firstAuditMailtask"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="是否通过"></exclusiveGateway>
+    <sequenceFlow id="flow12" sourceRef="firstAuditUsertask" targetRef="exclusivegateway1"></sequenceFlow>
+    <sequenceFlow id="flow13" name="初审通过" sourceRef="exclusivegateway1" targetRef="samplingUsertask">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${flag}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="freezingTimeUsertask" name="冻结期" activiti:candidateGroups="audit_freezing,audit_test" activiti:formKey="3">
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.autonavi.audit.service.support.UpdateFlagTaskListener"></activiti:taskListener>
+        <activiti:taskListener event="create" class="com.autonavi.audit.service.support.UpdateStatusTaskListener">
+          <activiti:field name="status">
+            <activiti:expression>${flag?6:7}</activiti:expression>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="com.autonavi.audit.service.support.UpdateTotalMoneyTaskListener"></activiti:taskListener>
+        <activiti:taskListener event="create" class="com.autonavi.audit.service.support.MqSendMessageTaskListener"></activiti:taskListener>
+      </extensionElements>
+      <multiInstanceLoopCharacteristics isSequential="true">
+        <loopCardinality>99999</loopCardinality>
+        <completionCondition>${bmpStatus==4}</completionCondition>
+      </multiInstanceLoopCharacteristics>
+    </userTask>
+    <sequenceFlow id="flow14" name="初审不通过" sourceRef="exclusivegateway1" targetRef="freezingTimeUsertask">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.autonavi.audit.service.support.UpdateTimeOutListener"></activiti:executionListener>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!flag}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow15" name="抽检审核通过/不通过" sourceRef="samplingUsertask" targetRef="freezingTimeUsertask">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.autonavi.audit.service.support.UpdateTimeOutListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow16" name="抽检到期" sourceRef="boundarytimer1" targetRef="freezingTimeUsertask">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.autonavi.audit.service.support.UpdateTimeOutListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <boundaryEvent id="boundarytimer3" name="冻结时间到，结束" attachedToRef="freezingTimeUsertask" cancelActivity="true">
+      <timerEventDefinition>
+        <timeDate>${duetime}</timeDate>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="flow17" sourceRef="boundarytimer3" targetRef="endevent2"></sequenceFlow>
+    <userTask id="appealUsertask" name="申诉" activiti:candidateGroups="audit_freezing,audit_test" activiti:formKey="4">
+      <documentation>由于已经设置了流程手工结束改变状态、发MQ，所以这里不再配置监听</documentation>
+      <extensionElements>
+        <activiti:taskListener event="create" class="com.autonavi.audit.service.support.UpdateStatusTaskListener">
+          <activiti:field name="status">
+            <activiti:string><![CDATA[8]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+        <activiti:taskListener event="create" class="com.autonavi.audit.service.support.SetClaimTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow18" name="申诉" sourceRef="freezingTimeUsertask" targetRef="appealUsertask">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${bmpStatus==4}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow19" sourceRef="appealUsertask" targetRef="endevent2">
+      <extensionElements>
+        <activiti:executionListener event="take" class="com.autonavi.audit.service.support.JPushSendMessageTaskEndExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_AuditProcess">
+    <bpmndi:BPMNPlane bpmnElement="AuditProcess" id="BPMNPlane_AuditProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="40.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="firstAuditUsertask" id="BPMNShape_firstAuditUsertask">
+        <omgdc:Bounds height="55.0" width="105.0" x="170.0" y="121.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundarytimer2" id="BPMNShape_boundarytimer2">
+        <omgdc:Bounds height="30.0" width="30.0" x="208.0" y="161.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="750.0" y="271.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="samplingUsertask" id="BPMNShape_samplingUsertask">
+        <omgdc:Bounds height="55.0" width="105.0" x="499.0" y="40.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundarytimer1" id="BPMNShape_boundarytimer1">
+        <omgdc:Bounds height="30.0" width="30.0" x="575.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="firstAuditMailtask" id="BPMNShape_firstAuditMailtask">
+        <omgdc:Bounds height="55.0" width="105.0" x="170.0" y="280.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="350.0" y="128.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="freezingTimeUsertask" id="BPMNShape_freezingTimeUsertask">
+        <omgdc:Bounds height="55.0" width="105.0" x="499.0" y="260.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundarytimer3" id="BPMNShape_boundarytimer3">
+        <omgdc:Bounds height="30.0" width="30.0" x="590.0" y="274.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="appealUsertask" id="BPMNShape_appealUsertask">
+        <omgdc:Bounds height="55.0" width="105.0" x="499.0" y="380.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="75.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="170.0" y="148.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="223.0" y="191.0"></omgdi:waypoint>
+        <omgdi:waypoint x="222.0" y="280.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="72.0" x="238.0" y="219.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="275.0" y="148.0"></omgdi:waypoint>
+        <omgdi:waypoint x="350.0" y="148.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="370.0" y="128.0"></omgdi:waypoint>
+        <omgdi:waypoint x="370.0" y="67.0"></omgdi:waypoint>
+        <omgdi:waypoint x="499.0" y="67.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="390.0" y="81.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="370.0" y="168.0"></omgdi:waypoint>
+        <omgdi:waypoint x="370.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="499.0" y="287.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="60.0" x="390.0" y="259.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="551.0" y="95.0"></omgdi:waypoint>
+        <omgdi:waypoint x="551.0" y="260.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="42.0" width="100.0" x="450.0" y="154.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="590.0" y="110.0"></omgdi:waypoint>
+        <omgdi:waypoint x="551.0" y="260.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="48.0" x="586.0" y="161.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="620.0" y="289.0"></omgdi:waypoint>
+        <omgdi:waypoint x="750.0" y="288.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="551.0" y="315.0"></omgdi:waypoint>
+        <omgdi:waypoint x="551.0" y="380.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="14.0" width="24.0" x="555.0" y="339.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="604.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="767.0" y="407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="767.0" y="306.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

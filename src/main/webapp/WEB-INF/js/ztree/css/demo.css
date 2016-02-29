@@ -1,0 +1,17 @@
+.ztree {
+	border: 1px solid #99bce8;
+	width: 300px;
+	height: 343px;
+	overflow-y: auto;
+	overflow-x: auto;
+	border-radius: 0px 0px 4px 4px;
+	background: #fff;
+}
+
+.ztree li span.button.add {
+	margin-left: 2px;
+	margin-right: -1px;
+	background-position: -144px 0;
+	vertical-align: top;
+	*vertical-align: middle
+}

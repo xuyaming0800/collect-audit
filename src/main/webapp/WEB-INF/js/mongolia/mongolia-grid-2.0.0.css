@@ -1,0 +1,342 @@
+@charset "utf-8";
+/* CSS Document */
+*,*::before,*::after {
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+.mongrid {
+	
+}
+
+.mongrid-head {
+	height: 25px;
+	border-width: 1px 1px 0px 1px;
+	border-color: #99bce8;
+	border-style: solid;
+	border-radius: 4px 4px 0px 0px;
+	background-image: url(./images/mongird-header-default-framed-top-bg.gif);
+}
+
+.mongrid-head-title {
+	margin: 3px 0px 0px 5px;
+}
+
+.mongrid-head-hidetable {
+	margin: 3px 5px 0px 0px;
+	float: right;
+}
+
+.mongrid-head-hidetable:hover {
+	box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.125) inset;
+}
+
+.mongrid-tbar,.mongrid-bbar {
+	background: #d3e1f1;
+	padding: 2px;
+}
+
+.mongrid-tbar {
+	border-width: 1px 1px 0px 1px;
+	border-color: #99bce8;
+	border-style: solid;
+}
+
+.mongrid-bbar {
+	border-width: 0px 1px 0px 1px;
+	border-color: #99bce8;
+	border-style: solid;
+}
+
+.mongrid-body {
+	
+}
+
+.mongrid-footer {
+	height: 4px;
+	border-width: 0px 1px 1px 1px;
+	border-color: #99bce8;
+	border-style: solid;
+	background: #d3e1f1;
+	border-radius: 0px 0px 4px 4px;
+}
+
+.mongrid-body-thead-table {
+	overflow: hidden;
+	border-width: 1px 1px 0px 1px;
+	border-color: #99bce8;
+	border-style: solid;
+	background: #ebf3fd repeat-x 0 top;
+	background-image: url(./images/mongird-column-header-bg.gif);
+}
+
+.mongrid-body-thead,.mongrid-body-tbody-row {
+	height: 25px;
+	cursor: default;
+	overflow: hidden;
+}
+
+.mongrid-body-thead {
+	border-bottom: solid #cdcdcd;
+	border-bottom-width: 1px;
+}
+
+.mongrid-body-thead-col,.mongrid-body-tbody-col {
+	height: 25px;
+	padding: 5px;
+	white-space: nowrap;
+	float: left;
+	overflow: hidden;
+}
+
+.mongrid-body-thead-col {
+	border-right: solid #cdcdcd;
+	padding: 0px 5px 5px 5px;
+	border-right-width: 1px;
+}
+
+.mongrid-body-thead-subgrid {
+	
+}
+
+.mongrid-body-thead-col:hover,.mongrid-body-thead-col-hover {
+	background: #ebf3fd repeat-x 0 top;
+	background-image: url(./images/mongird-column-header-over-bg.gif);
+}
+
+.mongrid-body-thead-col-active {
+	box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.125) inset;
+}
+
+.mongrid-body-thead-col-display {
+	position: relative;
+	top: -4px;
+}
+
+.mongrid-body-thead-col-sort {
+	height: 8px;
+	width: 8px;
+}
+
+.mongrid-body-thead-col-sort-asc {
+	position: relative;
+	top: 2px !important;
+	border: 4px solid #99bce8;
+	border-color: #99bce8 transparent transparent transparent;
+	border-style: solid dashed dashed dashed;
+	line-height: 0px;
+}
+
+.mongrid-body-thead-col-sort-desc {
+	position: relative;
+	top: -2px !important;
+	border: 4px solid #99bce8;
+	border-color: transparent transparent #99bce8 transparent;
+	border-style: dashed dashed solid dashed;
+	line-height: 0px;
+}
+
+.mongrid-body-thead-col-menu-button {
+	position: relative;
+	top: -25px;
+	height: 25px;
+	width: 15px;
+	overflow: hidden;
+	background: #ebf3fd repeat-x 0 top;
+	background-image: url(./images/mongird-column-header-over-bg.gif);
+}
+
+.mongrid-body-thead-col-menu-button>.mongrid-body-thead-col-menu-button-border
+	{
+	border-left: 1px solid #cdcdcd;
+	height: 25px;
+	width: 0px;
+}
+
+.mongrid-body-thead-col-menu-button>.mongrid-body-thead-col-menu-button-arrow
+	{
+	position: relative;
+	top: -15px;
+	border: 4px solid #000;
+	border-color: #000 transparent transparent transparent;
+	border-style: solid dashed dashed dashed;
+	line-height: 0px;
+	height: 8px;
+	width: 8px;
+	margin: 0px 3px;
+}
+
+.mongrid-body-thead-col-menu {
+	position: absolute;
+	list-style: none;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	background-color: #ececec;
+	z-index: 1000;
+	border-radius: 4px;
+	-webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+	box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.175);
+	background-clip: padding-box;
+	padding: 2px;
+	margin: 0px;
+	color: #000;
+	white-space: nowrap;
+}
+
+.mongrid-body-thead-col-menu>li {
+	padding: 2px 8px;
+	cursor: pointer;
+	list-style-type: none;
+}
+
+.mongrid-body-thead-col-menu>li:hover {
+	background: #99bce8;
+}
+
+.mongrid-body-tbody-table {
+	border-width: 0px 1px 1px 1px;
+	border-color: #99bce8;
+	border-style: solid;
+	overflow: auto;
+}
+
+.mongrid-body-tbody-row {
+	
+}
+
+.mongrid-body-tbody-row-odd {
+	background: #f7f7f7;
+}
+
+.mongrid-body-tbody-row-even {
+	background: #fff;
+}
+
+.mongrid-body-tbody-row-active {
+	background: #dfe8f6;
+}
+
+.mongrid-body-tbody-row:hover {
+	background: #eee;
+}
+
+.mongrid-body-tbody-col {
+	border-bottom: solid #e2e2e2;
+	border-bottom-width: 1px;
+}
+
+.mongrid-body-tbody-subgird {
+	position: relative;
+	top: 0px !important;
+	border: 4px solid #99bce8;
+	height: 8px;
+	width: 8px;
+	line-height: 0px;
+}
+
+.mongrid-body-tbody-subgird-collapse {
+	border-color: transparent transparent transparent #99bce8;
+	border-style: dashed dashed dashed solid;
+}
+
+.mongrid-body-tbody-subgird-open {
+	border-color: #99bce8 transparent transparent transparent;
+	border-style: solid dashed dashed dashed;
+}
+
+.mongrid-body-tbody-treegrid {
+	float: left;
+	margin-left: 5px;
+	margin-right: 2px;
+	height: 8px;
+	width: 8px;
+	position: relative;
+	top: 4px !important;
+	border: 4px solid #99bce8;
+	line-height: 0px;
+}
+
+.mongrid-body-tbody-treegrid-collapse {
+	border-color: transparent transparent transparent #99bce8;
+	border-style: dashed dashed dashed solid;
+}
+
+.mongrid-body-tbody-treegrid-open {
+	border-color: #99bce8 transparent transparent transparent;
+	border-style: solid dashed dashed dashed;
+}
+
+.mongrid-body-tbody-treegrid-children {
+	
+}
+
+.mongrid-pagination-div {
+	border-width: 0px 1px 0px 1px;
+	border-color: #99bce8;
+	border-style: solid;
+	background: #d3e1f1;
+}
+
+.mongrid-pagination {
+	display: inline-block;
+	padding-left: 0px;
+	border-radius: 4px;
+	border: solid 1px #ddd;
+	margin: 2px 2px -3px 2px;
+}
+
+.mongrid-pagination>li {
+	padding: 6px 11px;
+	display: block;
+	float: left;
+	border: solid #ddd;
+	border-width: 0px 1px;
+	margin-left: -1px;
+	background: #fff;
+}
+
+.mongrid-pagination>li:hover {
+	background: #eee;
+	cursor: pointer;
+}
+
+.mongrid-pagination>li:first-child,.pagination>li:first-child {
+	margin-left: 0px;
+	border-bottom-left-radius: 4px;
+	border-top-left-radius: 4px;
+	border-left-width: 0px;
+}
+
+.mongrid-pagination>li:last-child,.pagination>li:last-child {
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-right-width: 0px;
+}
+
+.mongrid-pagination>li>a,.pagination>li>span {
+	text-decoration: none;
+	color: #428bca;
+}
+
+.mongrid-pagination-active,.mongrid-pagination-active:focus {
+	cursor: default !important;
+	background: #428bca !important;
+	border-color: #428bca !important;
+}
+
+.mongrid-pagination-active>a,.mongrid-pagination-active>span {
+	color: #FFF;
+}
+
+.mongrid-rowlistselect {
+	height: 30px;
+	min-width: 75px;
+	float: right;
+	margin: 3px 2px -2px 2px;
+	border: solid #ddd;
+	border-width: 1px;
+	border-bottom-left-radius: 4px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
+}

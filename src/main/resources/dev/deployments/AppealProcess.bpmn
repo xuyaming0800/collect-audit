@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.abc.com/AppealProcess">
+  <process id="appealProcess" name="Appeal Process" isExecutable="true">
+    <startEvent id="startevent1" name="开始"></startEvent>
+    <userTask id="lessAudit" name="审核" activiti:candidateGroups="audit_test"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="lessAudit"></sequenceFlow>
+    <boundaryEvent id="boundarytimer1" name="Timer" attachedToRef="lessAudit" cancelActivity="true">
+      <timerEventDefinition>
+        <timeDuration>${deadline}</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <userTask id="usertask1" name="过期任务" activiti:candidateGroups="audit_test"></userTask>
+    <sequenceFlow id="flow3" sourceRef="boundarytimer1" targetRef="usertask1"></sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="usertask1" targetRef="endevent1"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow5" sourceRef="lessAudit" targetRef="endevent1"></sequenceFlow>
+    <textAnnotation id="textannotation1">
+      <text>如果到审核期限，任务则被认为过期。这时可以进行复审</text>
+    </textAnnotation>
+    <association id="association1" sourceRef="usertask1" targetRef="textannotation1"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_appealProcess">
+    <bpmndi:BPMNPlane bpmnElement="appealProcess" id="BPMNPlane_appealProcess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="40.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lessAudit" id="BPMNShape_lessAudit">
+        <omgdc:Bounds height="55.0" width="105.0" x="170.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundarytimer1" id="BPMNShape_boundarytimer1">
+        <omgdc:Bounds height="30.0" width="30.0" x="172.0" y="151.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="172.0" y="270.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="320.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
+        <omgdc:Bounds height="50.0" width="121.0" x="354.0" y="280.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="75.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="170.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="187.0" y="181.0"></omgdi:waypoint>
+        <omgdi:waypoint x="186.0" y="213.0"></omgdi:waypoint>
+        <omgdi:waypoint x="224.0" y="270.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="224.0" y="270.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="246.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="222.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="183.0"></omgdi:waypoint>
+        <omgdi:waypoint x="337.0" y="155.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="275.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="320.0" y="137.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="association1" id="BPMNEdge_association1">
+        <omgdi:waypoint x="277.0" y="297.0"></omgdi:waypoint>
+        <omgdi:waypoint x="354.0" y="305.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

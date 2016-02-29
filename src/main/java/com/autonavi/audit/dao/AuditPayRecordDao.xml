@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.autonavi.audit.dao.AuditPayRecordDao">
+	<insert id="insertCollectAuditPayRecord" parameterType="com.autonavi.audit.entity.CollectAuditPayRecord">
+		insert
+		into collect_audit_pay_record
+		( ID, taskId, status, content, createDate
+		)values
+		(#{id}, #{taskId},#{status},#{content},SYSDATE())
+	</insert>
+
+	<update id="updateCollectAuditPayRecord" parameterType="com.autonavi.audit.entity.CollectAuditPayRecord">
+		update collect_audit_pay_record set
+		status=#{status},
+		updateDate=SYSDATE()
+		<if test="content!=null and content!=''">,content=#{content}</if>
+		<where>
+			taskId=#{taskId}
+		</where>
+	</update>
+
+	<select id="query" resultType="com.autonavi.audit.entity.CollectAuditPayRecord">
+		select
+		cap.id,cap.taskId,cap.status,cap.content,cap.createDate,cap.updateDate,ca.collect_task_name as taskName
+		from
+		collect_audit_pay_record cap,collect_audit ca 
+		<where>
+			cap.taskId = ca.id
+			<if test="capr.status !=null">and cap.status = #{capr.status}</if>
+			<if test="capr.taskName !=null and capr.taskName!=''">and ca.collect_task_name like '%${capr.taskName}%'</if>
+		</where>
+		ORDER BY CASE cap.status WHEN '2' THEN 1 WHEN '0' THEN 2 WHEN '1' THEN 3 END,
+  		createDate DESC
+		limit ${pageNo},${pageSize}
+	</select>
+
+	<select id="queryCount" resultType="long">
+		select count(1) from
+		collect_audit_pay_record cap,collect_audit ca 
+		<where>
+			cap.taskId = ca.id
+			<if test="capr.status !=null">and cap.status = #{capr.status}</if>
+			<if test="capr.taskName !=null and capr.taskName!=''">and ca.collect_task_name like '%${capr.taskName}%'</if>
+		</where>
+	</select>
+
+	<select id="queryAuditPayRecordByPrimaryKey" resultType="com.autonavi.audit.entity.CollectAuditPayRecord"
+		parameterType="java.lang.String">
+		select
+		id,taskId,status,content,createDate,updateDate
+		from collect_audit_pay_record
+		where id=#{id}
+	</select>
+
+</mapper>
